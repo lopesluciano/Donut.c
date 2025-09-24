@@ -3,30 +3,30 @@
 #include <math.h>
 
 int main() {
-    // --- Setup Variables ---
-    float A = 0, B = 0;    // A and B are the rotation angles around the x and z axes.
-    float i, j;            // i and j are the angles used to trace the surface of the torus.
+    // --- Variaveis de Definicao ---
+    float A = 0, B = 0;    // A e B sao os angulos de rotacao em torno dos eixos x e z.
+    float i, j;            // i e j sao os angulos utilizados para acompanhar a superficie do toroide
     int k;
-    float z[1760];         // The z-buffer, stores the depth of each character on screen.
-    char b[1760];          // The character buffer, holds the ASCII character for each position.
+    float z[1760];         // O z buffer armazena a profundidade de cada caractere na tela
+    char b[1760];          // O buffer de caracteres armazena o ASCII de cada posicao
 
-    // --- Start of Animation ---
-    printf("\x1b[2J");     // ANSI escape code to clear the screen at the beginning.
+    // --- Inicio da Animacao ---
+    printf("\x1b[2J");     // Codigo ANSI que limpa a tela do terminal
     
-    // Infinite loop to continuously draw frames.
+    // Loop Infinito para desenhar os frames
     for(;;) {
-        // --- Prepare for New Frame ---
-        // Clear the buffers for the new frame.
-        memset(b, 32, 1760);       // Fill the character buffer with spaces (ASCII 32).
-        memset(z, 0, 7040);        // Fill the z-buffer with 0s. 7040 = 1760 * sizeof(float).
-
-        // --- Calculation Loops (The Core Math) ---
-        // These nested loops iterate through every point on the surface of the torus.
-        // j corresponds to the large circle of the torus (theta).
+        // --- Preparar novo frama ---
+        // Limpar os buffers para o novo frama.
+        memset(b, 32, 1760);       // Preencher o buffer de caracteres com espacos (ASCII 32)
+        memset(z, 0, 7040);        // Preencher o z-buffer com 0s. 7040 = 1760 * sizeof(float)
+  
+        // --- Loops de Calculo (A Matematica Principal) ---
+        // Os loops aninhados percorrem todos os pontos da superficie do toroide
+        // j corresponde ao maior circulo do toroide (theta)
         for(j = 0; j < 6.28; j += 0.07) {
-            // i corresponds to the small, cross-sectional circle (phi).
+            // i corresponde ao menor circulo (phi). i vai de 0 a 6.28 (2Pi)
             for(i = 0; i < 6.28; i += 0.02) {
-                // Pre-calculate sines and cosines for the current angles.
+                // Pre calcula senos e cossenos para os angulos atuais
                 float c = sin(i);
                 float d = cos(j);
                 float e = sin(A);
@@ -36,48 +36,49 @@ int main() {
                 float m = cos(B);
                 float n = sin(B);
 
-                // --- 3D Rotation and Projection Math ---
-                float h = d + 2; // Part of the torus equation, related to R1 + R2.
+                // --- Rotacao 3D e matematica de projecao ---
+                float h = d + 2; // Parte da equacao do toroide, relacionado a R1 + R2
                 
-                // D is the inverse of the point's z-coordinate (1/z). This is the key to perspective.
-                // The +5 pushes the donut away from the viewer.
+                // D eh o inverso da coordenada z do ponto (1/z). Isso eh a chave para a perspectiva
+                // O +5 distancia o donut do observador
                 float D = 1 / (c * h * e + f * g + 5); 
 
-                // t is an intermediate term from the rotation matrix multiplication.
+                // t eh o termo intermediario para a multiplicacao da matriz de rotacao
                 float t = c * h * g - f * e;
 
-                // --- Calculate Screen Coordinates ---
-                // x and y are the final 2D coordinates on the screen.
-                // The formulas combine rotation matrices for angles A and B, and projection using D.
+                // --- Calcular Coordenadas na Tela ---
+                // x e z sao as coordenadas finais da tela
+                // A formula combina matrizes de rotacao para angulos A e B, e projecao usando D
                 int x = 40 + 30 * D * (l * h * m - t * n);
                 int y = 12 + 15 * D * (l * h * n + t * m);
 
-                // --- Calculate Buffer Index and Luminance ---
-                // o is the 1D index into our 1D buffers (b and z) from the 2D (x, y) coords.
+                // --- Calcular indice de Buffer e Iluminancia ---
+                // o eh o indice 1D nos buffer 1D (b e z) a partir das coordenadas (x, y)
                 int o = x + 80 * y;
-                
-                // N is the luminance index. It's the dot product of the surface normal and the light vector, scaled by 8.
+
+
+                // N eh o indice de luminancia. Ele eh o produto escalar da superficie normal com o vetor luz, escalado por 8
                 int N = 8 * ((f * e - c * d * g) * m - c * d * e - f * g - l * d * n);
 
-                // --- Z-Buffering and Drawing ---
-                // Check if the point is within the screen bounds AND if it's closer than what's already in the z-buffer.
+                // --- Z-Buffering e Desenho ---
+                // Checar se o ponto esta dentro dos limites de tele E se esta mais perto do que esta no z-buffer
                 if(22 > y && y > 0 && 80 > x && x > 0 && D > z[o]) {
-                    z[o] = D; // Update z-buffer with the new, closer depth.
-                    // Select the character based on the luminance index N.
+                    z[o] = D; // Atualizar o z-buffer com a nova profundidade
+                    // Selecionar o caractere baseado no indice de iluminancia N
                     b[o] = ".,-~:;=!*#$@"[N > 0 ? N : 0];
                 }
             }
         }
 
-        // --- Render the Frame ---z
-        printf("\x1b[H"); // ANSI escape code to move cursor to the top-left (home).
+        // --- Renderizar o Frame ---z
+        printf("\x1b[H"); // Codigo ANSI para mover o cursor para o canto superior esquerdo
         
-        // Loop through the character buffer and print it to the screen.
+        // Percorrer o buffer de caracteres e imprimir na tela 
         for(k = 0; k < 1761; k++) {
-            // A trick to print newlines: if k is a multiple of 80, print newline (ASCII 10), otherwise print the character.
+            // Um truque para imprimir novas linhas. Se k eh multiplo de 80, imprime nova linha (ASCII 10), caso contrario, imprima o caractere
             putchar(k % 80 ? b[k] : 10);
-            
-            // Increment rotation angles inside the print loop for the next frame.
+
+            // Incremente os angulos de rotacao dentro do loop para o proximo frame
             A += 0.00001;
             B += 0.000005;
         }
