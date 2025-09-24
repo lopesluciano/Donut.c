@@ -2,7 +2,7 @@
 
 Este repositório contém o código-fonte e uma análise matemática detalhada do famoso donut.c, um programa clássico que renderiza um donut tridimensional giratório usando apenas caracteres ASCII no terminal.
 
-Criado originalmente por Andy Sloane, este pequeno programa é um exemplo fascinante de computação gráfica, física e otimização, tudo compactado em um único arquivo C. Ele demonstra como conceitos complexos como rotações 3D, projeção de perspectiva e iluminação podem ser implementados de forma elegante para criar uma animação impressionante em um ambiente tão limitado quanto um terminal de texto.
+Criado originalmente por [Andy Sloane](https://www.a1k0n.net/2011/07/20/donut-math.html), este pequeno programa é um exemplo fascinante de computação gráfica, física e otimização, tudo compactado em um único arquivo C. Ele demonstra como conceitos complexos como rotações 3D, projeção de perspectiva e iluminação podem ser implementados de forma elegante para criar uma animação impressionante em um ambiente tão limitado quanto um terminal de texto.
 
 Este README serve como um guia para entender a "mágica" por trás do código.
 Como Compilar e Executar
